@@ -1,11 +1,13 @@
 class Knight
  attr_accessor :spot, :potential
+ attr_reader :icon
  def initialize(spot)
+   @icon = "\u2658"
    @spot = spot
    @potential = []
    update_potential
  end
- 
+
  def update_potential
    x = @spot[0]
    y = @spot[1]

@@ -1,9 +1,9 @@
 class Board
   attr_accessor :occupied_by
   attr_reader :spot
-  def initialize(spot,piece=nil)
+  def initialize(spot)
     @spot = spot
-    update_occupied_by(piece)
+    @occupied_by = " "
     Game.add_to_board(self)
   end
 
@@ -20,6 +20,7 @@ class Game
   def initialize
     @@board = []
     @@pieces = []
+    @@taken = []
   end
 
   def self.add_to_board(spot)
@@ -30,12 +31,20 @@ class Game
     @@pieces << piece
   end
 
+  def self.add_to_taken(piece)
+    @@taken << piece
+  end
+
   def self.board
     @@board
   end
 
   def self.pieces
     @@pieces
+  end
+
+  def self.taken
+    @@taken
   end
 
   def self.update_all_potentials
@@ -56,7 +65,12 @@ class Game
       puts "There is no piece here, try again!"
       Game.select_piece
     else
-      @@board[spot]
+      if @@board[spot].occupied_by.potential.empty?
+        puts "That piece has no available moves, pick another"
+        Game.select_piece
+      else
+        @@board[spot]
+      end
     end
   end
 
@@ -78,8 +92,10 @@ class Game
     origin = Game.select_piece
     origin_piece = origin.occupied_by
     destination = Game.select_destination(origin_piece)
+    Game.add_to_taken(destination.occupied_by) if destination.occupied_by != " "
     origin_piece.change_spot(destination)
     origin.update_occupied_by
+    Game.update_all_potentials
   end
 
 end

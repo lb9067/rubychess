@@ -53,9 +53,11 @@ class Pawn < Knight
     x = @spot.spot[0]
     y = @spot.spot[1]
     potential = []
-    potential << [x,y+1] if Game.whos_here([x,y+1]) == " "
-    potential << [x-1,y+1] if Game.whos_here([x-1,y+1]) == self.opposite
-    potential << [x+1,y+1] if Game.whos_here([x+1,y+1]) == self.opposite
+    unless y == 8
+      potential << [x,y+1] if Game.whos_here([x,y+1]) == " "
+      potential << [x-1,y+1] if x != 1 && Game.whos_here([x-1,y+1]) == self.opposite
+      potential << [x+1,y+1] if x != 8 && Game.whos_here([x+1,y+1]) == self.opposite
+    end
     potential.each do |a|
       a.reject! { a.any? { |b| b < 1 || b > 8 } }
     end
@@ -70,39 +72,67 @@ class Rook < Knight
     x = @spot.spot[0]
     y = @spot.spot[1]
     potential = []
+    done == false
     unless x == 8
       x += 1
-      until x >= 9 || Game.whos_here([x,y]) != " "
-        potential << [x,y]
+      until x >= 9 || done == true
+        if Game.whos_here([x,y]) == " "
+          potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          potential << [x,y]
+          done = true
+        else
+          done = true
+        end
         x += 1
-        puts "right added"
       end
     end
+    done == false
     x = @spot.spot[0]
     unless x == 1
       x -= 1
-      until x <= 0 || Game.whos_here([x,y]) != " "
-        potential << [x,y]
+      until x <= 0 || done == true
+        if Game.whos_here([x,y]) == " "
+          potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          potential << [x,y]
+          done = true
+        else
+          done = true
+        end
         x -= 1
-        puts "left added"
       end
     end
+    done == false
     x = @spot.spot[0]
     unless y == 8
       y += 1
-      until y >= 9 || Game.whos_here([x,y]) != " "
-        potential << [x,y]
+      until y >= 9 || done == true
+        if Game.whos_here([x,y]) == " "
+          potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          potential << [x,y]
+          done = true
+        else
+          done = true
+        end
         y += 1
-        puts "up added"
       end
     end
+    done == false
     y = @spot.spot[1]
     unless y == 1
       y -= 1
-      until y <= 0 || Game.whos_here([x,y]) != " "
-        potential << [x,y]
+      until y <= 0 || done == true
+        if Game.whos_here([x,y]) == " "
+          potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          potential << [x,y]
+          done = true
+        else
+          done = true
+        end
         y -= 1
-        puts "down added"
       end
     end
     @potential = potential

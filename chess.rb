@@ -1,7 +1,6 @@
 #implement icons properly
 #update pawn classes to white and black
 #update_potential to only update when necessary
-#add queen, king
 
 
 class Knight
@@ -59,10 +58,6 @@ class Pawn < Knight
       potential << [x-1,y+1] if x != 1 && Game.whos_here([x-1,y+1]) == self.opposite
       potential << [x+1,y+1] if x != 8 && Game.whos_here([x+1,y+1]) == self.opposite
     end
-    potential.each do |a|
-      a.reject! { a.any? { |b| b < 1 || b > 8 } }
-    end
-    potential.delete([])
     @potential = potential
   end
 end
@@ -367,6 +362,32 @@ class Queen < Knight
         y -= 1
       end
     end
+    @potential = potential
+  end
+end
+
+class King < Knight
+
+  def update_potential
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    potential = [
+                 [x+1,y+1],
+                 [x+1,y-1],
+                 [x-1,y+1],
+                 [x-1,y-1],
+                 [x+1,y],
+                 [x-1,y],
+                 [x,y+1],
+                 [x,y-1]]
+    potential.each do |a|
+      a.reject! { a.any? { |b| b < 1 || b > 8 } }
+    end
+    potential.delete([])
+    potential.each do |x|
+      x.reject! { Game.whos_here(x) == self.color }
+    end
+    potential.delete([])
     @potential = potential
   end
 end

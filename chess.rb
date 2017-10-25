@@ -1,6 +1,7 @@
 #implement icons properly
 #update pawn classes to white and black
-#add bishop, queen, king
+#update_potential to only update when necessary
+#add queen, king
 
 
 class Knight
@@ -72,7 +73,7 @@ class Rook < Knight
     x = @spot.spot[0]
     y = @spot.spot[1]
     potential = []
-    done == false
+    done = false
     unless x == 8
       x += 1
       until x >= 9 || done == true
@@ -87,7 +88,7 @@ class Rook < Knight
         x += 1
       end
     end
-    done == false
+    done = false
     x = @spot.spot[0]
     unless x == 1
       x -= 1
@@ -103,7 +104,7 @@ class Rook < Knight
         x -= 1
       end
     end
-    done == false
+    done = false
     x = @spot.spot[0]
     unless y == 8
       y += 1
@@ -119,7 +120,7 @@ class Rook < Knight
         y += 1
       end
     end
-    done == false
+    done = false
     y = @spot.spot[1]
     unless y == 1
       y -= 1
@@ -132,6 +133,89 @@ class Rook < Knight
         else
           done = true
         end
+        y -= 1
+      end
+    end
+    @potential = potential
+  end
+end
+
+class Bishop < Knight
+
+  def update_potential
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    potential = []
+    done = false
+    unless x == 8 || y == 8
+      x += 1
+      y += 1
+      until x >= 9 || y >= 9 || done == true
+        if Game.whos_here([x,y]) == " "
+          potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          potential << [x,y]
+          done = true
+        else
+          done = true
+        end
+        x += 1
+        y += 1
+      end
+    end
+    done = false
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    unless x == 1 || y == 8
+      x -= 1
+      y += 1
+      until x <= 0 || y >= 9 || done == true
+        if Game.whos_here([x,y]) == " "
+          potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          potential << [x,y]
+          done = true
+        else
+          done = true
+        end
+        x -= 1
+        y += 1
+      end
+    end
+    done = false
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    unless y == 1 || x == 8
+      x += 1
+      y -= 1
+      until y >= 0 || x >= 9 || done == true
+        if Game.whos_here([x,y]) == " "
+          potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          potential << [x,y]
+          done = true
+        else
+          done = true
+        end
+        x += 1
+        y -= 1
+      end
+    end
+    done = false
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    unless y == 1 || x == 1
+      y -= 1
+      until y <= 0 || x <= 0 || done == true
+        if Game.whos_here([x,y]) == " "
+          potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          potential << [x,y]
+          done = true
+        else
+          done = true
+        end
+        x -= 1
         y -= 1
       end
     end

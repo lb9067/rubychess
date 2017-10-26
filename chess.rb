@@ -1,10 +1,9 @@
-#create board (use colorize?)
-#update_potential to only update when necessary
-# e.g. when piece selected, update all when king selected
-#remove potential king moves that puts it in check
-#recognize check-mate
-#add queen polymorph to pawns
-#add castle move for rook/king
+# => create board (use colorize?)
+# => recognize check(mate)
+# => add queen polymorph to pawns
+# => add castle move for rook/king
+# => fix the king to not allow a taking of oppenent that would put
+#    it in check
 
 
 class Knight
@@ -63,13 +62,11 @@ class Knight
   #    and therefore cannot be selected anymore since pieces are selected
   #    by the spot, and not the piece itself
   # => The taken piece is added to a @@taken array in the Game class
-  # => This also currently updates its own potential moves but this will be
-  #    deleted and called from somewhere else
+  # => Marks the piece as moved to disqualify it from special moves
   def change_spot(spot)
     spot.update_occupied_by(self)
     @spot = spot
     @moved = true
-    update_potential
   end
 end
 
@@ -456,6 +453,9 @@ class King < Knight
   # => Adds all potential moves to an array,
   #    deletes the ones that are out of bounds,
   #    then deletes the ones that are occupied by a team member
+  #    Now deletes moves that would put it in check- EXCEPT:
+  #    EXCEPT: if it takes an opponents piece which would put it
+  #    in check it will still allow... *need to fix that*
   # => Needs to be updated to reject moves that result in a check
   # => Needs to be updated to allow castle move
   def update_potential
@@ -476,6 +476,16 @@ class King < Knight
     potential.delete([])
     potential.each do |x|
       x.reject! { Game.whos_here(x) == self.color }
+    end
+    potential.delete([])
+    potential.each do |king|
+      Game.pieces.each do |piece|
+        if piece.color == @opposite
+          piece.potential.each do |path|
+            king.reject! { path == king }
+          end
+        end
+      end
     end
     potential.delete([])
     @potential = potential

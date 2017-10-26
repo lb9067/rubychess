@@ -16,8 +16,8 @@ class Knight
   # => Pieces init by spot's object name, not the actual spot (e.g. s1_1)
   #   this links the piece to the object of the space it occupies so
   #   you can easily access any attribute of either side
-  # => Also, each piece is added to an array, havent needed that yet so
-  #    I might delete it
+  # => Also, each piece is added to an array for easy access to update
+  #    all pieces potential moves
   def initialize(spot,color="white")
     #color == "white" ? @icon = "\u2658" : @icon = "\u265E"
     color == "white" ? @color = "white" : @color = "black"

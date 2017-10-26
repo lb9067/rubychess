@@ -101,8 +101,6 @@ class Game
   # => It is reliant on the order of spots initialized as mentioned above
   # => It will not let you choose a spot if there is no piece there or
   #    if that piece has no moves.
-  # => This will also update_potential when a piece is selected
-  #    rather than how it is currently set up once I update it,
   def self.select_piece
     puts "Choose a piece by spot"
     input = gets.chomp
@@ -112,6 +110,10 @@ class Game
       puts "There is no piece here, try again!"
       Game.select_piece
     else
+      if @@board[spot].occupied_by.is_a?(King)
+        Game.update_all_potentials
+      end
+      @@board[spot].update_potential
       if @@board[spot].occupied_by.potential.empty?
         puts "That piece has no available moves, pick another"
         Game.select_piece
@@ -136,7 +138,7 @@ class Game
       select_destination(piece)
     end
   end
-  
+
   # => This method calls select_piece and select_destination. It also
   #    updates the pieces spot and the spots occupant and adds pieces
   #    that were taken to the @@taken array

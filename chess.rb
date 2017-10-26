@@ -7,7 +7,6 @@
 #add first move bonus to pawns
 #add queen polymorph to pawns
 #add castle move for rook/king
-#update pawn classes to white and black
 
 
 class Knight
@@ -68,10 +67,9 @@ class Knight
   end
 end
 
-class Pawn < Knight
+class UpPawn < Knight
   # => Adds forward space if its empty
   #    and forward diagonals if occupied by opponent and not out of bounds
-  # => Needs to be updated or duplicated with opposite team's moves
   # => Needs to be updated to allow first move bonus
   # => Needs to be updated with queen polymorph
   def update_potential
@@ -82,6 +80,24 @@ class Pawn < Knight
       potential << [x,y+1] if Game.whos_here([x,y+1]) == " "
       potential << [x-1,y+1] if x != 1 && Game.whos_here([x-1,y+1]) == self.opposite
       potential << [x+1,y+1] if x != 8 && Game.whos_here([x+1,y+1]) == self.opposite
+    end
+    @potential = potential
+  end
+end
+
+class DownPawn < Knight
+  # => Adds forward space if its empty
+  #    and forward diagonals if occupied by opponent and not out of bounds
+  # => Needs to be updated to allow first move bonus
+  # => Needs to be updated with queen polymorph
+  def update_potential
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    potential = []
+    unless y == 1
+      potential << [x,y-1] if Game.whos_here([x,y-1]) == " "
+      potential << [x-1,y-1] if x != 1 && Game.whos_here([x-1,y-1]) == self.opposite
+      potential << [x+1,y-1] if x != 8 && Game.whos_here([x+1,y-1]) == self.opposite
     end
     @potential = potential
   end

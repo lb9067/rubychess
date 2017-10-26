@@ -1,4 +1,3 @@
-#implement icons
 #create board (use colorize?)
 #update_potential to only update when necessary
 # e.g. when piece selected, update all when king selected
@@ -18,14 +17,19 @@ class Knight
   # => Also, each piece is added to an array for easy access to update
   #    all pieces potential moves
   def initialize(spot,color="white")
-    #color == "white" ? @icon = "\u2658" : @icon = "\u265E"
     color == "white" ? @color = "white" : @color = "black"
     color == "white" ? @opposite = "black" : @opposite = "white"
     @spot = spot
     @potential = []
     @spot.update_occupied_by(self)
     Game.add_to_pieces(self)
+    create_icon
   end
+
+  def create_icon
+    @color == "black" ? @icon = "\u2658" : @icon = "\u265E"
+  end
+
   # => Adds all potential moves to an array,
   #    deletes the ones that are out of bounds,
   #    then deletes the ones that are occupied by a team member
@@ -51,6 +55,7 @@ class Knight
     potential.delete([])
     @potential = potential
   end
+
   # => This is called by the game, it takes an argument of the destination
   #    and updates the destination spot's object with itself as its occupant,
   #    as well as updates itself with the object it now occupies
@@ -83,9 +88,14 @@ class UpPawn < Knight
     end
     @potential = potential
   end
+
+  def create_icon
+    @color == "black" ? @icon = "\u2659" : @icon = "\u265F"
+  end
 end
 
 class DownPawn < Knight
+
   # => Adds forward space if its empty
   #    and forward diagonals if occupied by opponent and not out of bounds
   # => Needs to be updated to allow first move bonus
@@ -101,9 +111,14 @@ class DownPawn < Knight
     end
     @potential = potential
   end
+
+  def create_icon
+    @color == "black" ? @icon = "\u2659" : @icon = "\u265F"
+  end
 end
 
 class Rook < Knight
+
   # => Checks spots in one direction and adds to potential moves until
   #    it reaches the end, a team member, or an opponent. If it reaches
   #    an oppenent it adds its space as the last move in this direction
@@ -178,9 +193,14 @@ class Rook < Knight
     end
     @potential = potential
   end
+
+  def create_icon
+    @color == "black" ? @icon = "\u2656" : @icon = "\u265C"
+  end
 end
 
 class Bishop < Knight
+
   # => Checks spots in one direction and adds to potential moves until
   #    it reaches the end, a team member, or an opponent. If it reaches
   #    an oppenent it adds its space as the last move in this direction
@@ -264,9 +284,14 @@ class Bishop < Knight
     end
     @potential = potential
   end
+
+  def create_icon
+    @color == "black" ? @icon = "\u2657" : @icon = "\u265D"
+  end
 end
 
 class Queen < Knight
+
   # => Checks spots in one direction and adds to potential moves until
   #    it reaches the end, a team member, or an opponent. If it reaches
   #    an oppenent it adds its space as the last move in this direction
@@ -415,9 +440,14 @@ class Queen < Knight
     end
     @potential = potential
   end
+
+  def create_icon
+    @color == "black" ? @icon = "\u2655" : @icon = "\u265B"
+  end
 end
 
 class King < Knight
+
   # => Adds all potential moves to an array,
   #    deletes the ones that are out of bounds,
   #    then deletes the ones that are occupied by a team member
@@ -444,5 +474,9 @@ class King < Knight
     end
     potential.delete([])
     @potential = potential
+  end
+
+  def create_icon
+    @color == "black" ? @icon = "\u2654" : @icon = "\u265A"
   end
 end

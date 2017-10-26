@@ -3,6 +3,7 @@
 class Board
   attr_accessor :occupied_by
   attr_reader :spot
+
   # => Board objects are individual spaces.
   #    They are created in a standard order and added to an array
   #    so you can find them easily. Some code depends on this order.
@@ -16,6 +17,7 @@ class Board
     @occupied_by = " "
     Game.add_to_board(self)
   end
+
   # => Updates the object with its new occupant- called from the piece's
   #    change_spot method
   # => Also called by space that was just departed from with no
@@ -23,6 +25,7 @@ class Board
   def update_occupied_by(piece=nil)
     piece == nil ? @occupied_by = " " : @occupied_by = piece
   end
+
   # => Easy access to a spot's occupant
   def occupied_by
     @occupied_by
@@ -30,6 +33,7 @@ class Board
 end
 
 class Game
+
   # => Game has no instances except itself. All methods are
   #    class methods, this may change when I implement save/load games
   # => Init starts fresh arrays of board spots, pieces, and taken pieces
@@ -38,34 +42,41 @@ class Game
     @@pieces = []
     @@taken = []
   end
+
   # => Called in spot init to add to board spots array
   def self.add_to_board(spot)
     @@board << spot
   end
+
   # => Called in piece init to add to pieces array
   def self.add_to_pieces(piece)
     @@pieces << piece
   end
+
   # => Called by the Game when a piece is taken-or basically
   #    overlapped and no spot contains it as an occupant anymore
   def self.add_to_taken(piece)
     @@taken << piece
   end
+
   # => Easy way to call or iterate through all the spots
   #    This is used in several methods below
   def self.board
     @@board
   end
+
   # => Easy way to call or iterate through pieces- Used later for
   #    updating potentials for all pieces
   def self.pieces
     @@pieces
   end
+
   # => Easy access to taken pieces. No use yet but will probably use
   #    this to display the taken pieces in the GUI
   def self.taken
     @@taken
   end
+
   # => Updates all piece's potential moves in one swift kic....
   #    Will only use when a King is selected to avoid allowing
   #    moves that will put it in check
@@ -74,6 +85,7 @@ class Game
   def self.update_all_potentials
     @@pieces.each { |x| x.update_potential }
   end
+
   # => This method is used to see who occupies a spot. It is called
   #    by each piece when determining potential moves.
   # => This part will eventually be reworked as it iterates until it
@@ -83,6 +95,7 @@ class Game
     @@board.each { |x| i_am = x.occupied_by if x.spot == spot }
     i_am == " " ? i_am : i_am.color
   end
+
   # => This method has you choose a spot by its axis points in order to
   #    select the piece you want to move- it is called by make_move
   # => It is reliant on the order of spots initialized as mentioned above
@@ -107,6 +120,7 @@ class Game
       end
     end
   end
+
   # => This method selects the destination of the previously selected
   #    piece.  It checks the potential moves of that piece first and
   #    will not allow you to make an invalid move. -Called by make_move
@@ -122,6 +136,7 @@ class Game
       select_destination(piece)
     end
   end
+  
   # => This method calls select_piece and select_destination. It also
   #    updates the pieces spot and the spots occupant and adds pieces
   #    that were taken to the @@taken array

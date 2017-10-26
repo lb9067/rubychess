@@ -3,7 +3,6 @@
 # e.g. when piece selected, update all when king selected
 #remove potential king moves that puts it in check
 #recognize check-mate
-#add first move bonus to pawns
 #add queen polymorph to pawns
 #add castle move for rook/king
 
@@ -21,6 +20,7 @@ class Knight
     color == "white" ? @opposite = "black" : @opposite = "white"
     @spot = spot
     @potential = []
+    @moved = false
     @spot.update_occupied_by(self)
     Game.add_to_pieces(self)
     create_icon
@@ -68,6 +68,7 @@ class Knight
   def change_spot(spot)
     spot.update_occupied_by(self)
     @spot = spot
+    @moved = true
     update_potential
   end
 end
@@ -75,7 +76,6 @@ end
 class UpPawn < Knight
   # => Adds forward space if its empty
   #    and forward diagonals if occupied by opponent and not out of bounds
-  # => Needs to be updated to allow first move bonus
   # => Needs to be updated with queen polymorph
   def update_potential
     x = @spot.spot[0]
@@ -85,6 +85,9 @@ class UpPawn < Knight
       potential << [x,y+1] if Game.whos_here([x,y+1]) == " "
       potential << [x-1,y+1] if x != 1 && Game.whos_here([x-1,y+1]) == self.opposite
       potential << [x+1,y+1] if x != 8 && Game.whos_here([x+1,y+1]) == self.opposite
+      unless @moved == true
+        potential << [x,y+2] if Game.whos_here([x,y+1]) == " " && Game.whos_here([x,y+2]) == " "
+      end
     end
     @potential = potential
   end
@@ -98,7 +101,6 @@ class DownPawn < Knight
 
   # => Adds forward space if its empty
   #    and forward diagonals if occupied by opponent and not out of bounds
-  # => Needs to be updated to allow first move bonus
   # => Needs to be updated with queen polymorph
   def update_potential
     x = @spot.spot[0]
@@ -108,6 +110,9 @@ class DownPawn < Knight
       potential << [x,y-1] if Game.whos_here([x,y-1]) == " "
       potential << [x-1,y-1] if x != 1 && Game.whos_here([x-1,y-1]) == self.opposite
       potential << [x+1,y-1] if x != 8 && Game.whos_here([x+1,y-1]) == self.opposite
+      unless @moved == true
+        potential << [x,y-2] if Game.whos_here([x,y-1]) == " " && Game.whos_here([x,y-2]) == " "
+      end
     end
     @potential = potential
   end

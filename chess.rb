@@ -3,7 +3,7 @@
 # => add queen polymorph to pawns
 # => add castle move for rook/king
 # => fix the king to not allow a taking of oppenent that would put
-#    it in check
+#    it in check-mate
 
 
 class Knight
@@ -456,7 +456,7 @@ class King < Knight
   #    Now deletes moves that would put it in check- EXCEPT:
   #    EXCEPT: if it takes an opponents piece which would put it
   #    in check it will still allow... *need to fix that*
-  # => Needs to be updated to reject moves that result in a check
+  # => Needs to be updated to reject moves that result in a checkmate
   # => Needs to be updated to allow castle move
   def update_potential
     x = @spot.spot[0]

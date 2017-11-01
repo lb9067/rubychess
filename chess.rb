@@ -2,12 +2,11 @@
 # => recognize check(mate)
 # => add queen polymorph to pawns
 # => add castle move for rook/king
-# => fix the king to not allow a taking of oppenent that would put
-#    it in check-mate
+# => remove moves that would reveal youself checked
 
 
 class Knight
-  attr_accessor :spot, :potential
+  attr_accessor :spot, :potential, :team_in_path
   attr_reader :icon, :color, :opposite
   # => Pieces init by spot's object name, not the actual spot (e.g. s1_1)
   #   this links the piece to the object of the space it occupies so
@@ -19,6 +18,7 @@ class Knight
     color == "white" ? @opposite = "black" : @opposite = "white"
     @spot = spot
     @potential = []
+    @team_in_path = []
     @moved = false
     @spot.update_occupied_by(self)
     Game.add_to_pieces(self)
@@ -35,6 +35,7 @@ class Knight
   def update_potential
     x = @spot.spot[0]
     y = @spot.spot[1]
+    team_in_path = []
     potential = [
                  [x+2,y+1],
                  [x+2,y-1],
@@ -49,10 +50,12 @@ class Knight
     end
     potential.delete([])
     potential.each do |x|
+      team_in_path << x.dup if Game.whos_here(x) == self.color
       x.reject! { Game.whos_here(x) == self.color }
     end
     potential.delete([])
     @potential = potential
+    @team_in_path = team_in_path
   end
 
   # => This is called by the game, it takes an argument of the destination
@@ -77,16 +80,20 @@ class UpPawn < Knight
   def update_potential
     x = @spot.spot[0]
     y = @spot.spot[1]
+    team_in_path = []
     potential = []
     unless y == 8
       potential << [x,y+1] if Game.whos_here([x,y+1]) == " "
       potential << [x-1,y+1] if x != 1 && Game.whos_here([x-1,y+1]) == self.opposite
       potential << [x+1,y+1] if x != 8 && Game.whos_here([x+1,y+1]) == self.opposite
+      team_in_path << [x-1,y+1] if x != 1 && Game.whos_here([x-1,y+1]) == self.color
+      team_in_path << [x+1,y+1] if x != 8 && Game.whos_here([x+1,y+1]) == self.color
       unless @moved == true
         potential << [x,y+2] if Game.whos_here([x,y+1]) == " " && Game.whos_here([x,y+2]) == " "
       end
     end
     @potential = potential
+    @team_in_path = team_in_path
   end
 
   def create_icon
@@ -102,16 +109,20 @@ class DownPawn < Knight
   def update_potential
     x = @spot.spot[0]
     y = @spot.spot[1]
+    team_in_path = []
     potential = []
     unless y == 1
       potential << [x,y-1] if Game.whos_here([x,y-1]) == " "
       potential << [x-1,y-1] if x != 1 && Game.whos_here([x-1,y-1]) == self.opposite
       potential << [x+1,y-1] if x != 8 && Game.whos_here([x+1,y-1]) == self.opposite
+      team_in_path << [x-1,y-1] if x != 1 && Game.whos_here([x-1,y-1]) == self.color
+      team_in_path << [x+1,y-1] if x != 8 && Game.whos_here([x+1,y-1]) == self.color
       unless @moved == true
         potential << [x,y-2] if Game.whos_here([x,y-1]) == " " && Game.whos_here([x,y-2]) == " "
       end
     end
     @potential = potential
+    @team_in_path = team_in_path
   end
 
   def create_icon
@@ -129,6 +140,7 @@ class Rook < Knight
   def update_potential
     x = @spot.spot[0]
     y = @spot.spot[1]
+    team_in_path = []
     potential = []
     done = false
     unless x == 8
@@ -140,6 +152,7 @@ class Rook < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         x += 1
@@ -156,6 +169,7 @@ class Rook < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         x -= 1
@@ -172,6 +186,7 @@ class Rook < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         y += 1
@@ -188,12 +203,14 @@ class Rook < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         y -= 1
       end
     end
     @potential = potential
+    @team_in_path = team_in_path
   end
 
   def create_icon
@@ -210,6 +227,7 @@ class Bishop < Knight
   def update_potential
     x = @spot.spot[0]
     y = @spot.spot[1]
+    team_in_path = []
     potential = []
     done = false
     unless x == 8 || y == 8
@@ -222,6 +240,7 @@ class Bishop < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         x += 1
@@ -241,6 +260,7 @@ class Bishop < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         x -= 1
@@ -260,6 +280,7 @@ class Bishop < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         x += 1
@@ -278,6 +299,7 @@ class Bishop < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         x -= 1
@@ -285,6 +307,7 @@ class Bishop < Knight
       end
     end
     @potential = potential
+    @team_in_path = team_in_path
   end
 
   def create_icon
@@ -301,6 +324,7 @@ class Queen < Knight
   def update_potential
     x = @spot.spot[0]
     y = @spot.spot[1]
+    team_in_path = []
     potential = []
     done = false
     unless x == 8
@@ -312,6 +336,7 @@ class Queen < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         x += 1
@@ -328,6 +353,7 @@ class Queen < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         x -= 1
@@ -344,6 +370,7 @@ class Queen < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         y += 1
@@ -360,6 +387,7 @@ class Queen < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         y -= 1
@@ -378,6 +406,7 @@ class Queen < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         x += 1
@@ -397,6 +426,7 @@ class Queen < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         x -= 1
@@ -416,6 +446,7 @@ class Queen < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         x += 1
@@ -434,6 +465,7 @@ class Queen < Knight
           potential << [x,y]
           done = true
         else
+          team_in_path << [x,y]
           done = true
         end
         x -= 1
@@ -441,6 +473,7 @@ class Queen < Knight
       end
     end
     @potential = potential
+    @team_in_path = team_in_path
   end
 
   def create_icon
@@ -453,14 +486,12 @@ class King < Knight
   # => Adds all potential moves to an array,
   #    deletes the ones that are out of bounds,
   #    then deletes the ones that are occupied by a team member
-  #    Now deletes moves that would put it in check- EXCEPT:
-  #    EXCEPT: if it takes an opponents piece which would put it
-  #    in check it will still allow... *need to fix that*
-  # => Needs to be updated to reject moves that result in a checkmate
+  #    Now deletes moves that would put it in check even by taking a piece
   # => Needs to be updated to allow castle move
   def update_potential
     x = @spot.spot[0]
     y = @spot.spot[1]
+    team_in_path = []
     potential = [
                  [x+1,y+1],
                  [x+1,y-1],
@@ -475,6 +506,7 @@ class King < Knight
     end
     potential.delete([])
     potential.each do |x|
+      team_in_path << x.dup if Game.whos_here(x) == self.color
       x.reject! { Game.whos_here(x) == self.color }
     end
     potential.delete([])
@@ -484,11 +516,19 @@ class King < Knight
           piece.potential.each do |path|
             king.reject! { path == king }
           end
+          piece.team_in_path.each do |check|
+            king.reject! { check == king }
+          end
         end
       end
     end
     potential.delete([])
     @potential = potential
+    @team_in_path = team_in_path
+  end
+
+  def in_check
+
   end
 
   def create_icon

@@ -113,7 +113,7 @@ class Game
       if @@board[spot].occupied_by.is_a?(King)
         Game.update_all_potentials
       end
-      @@board[spot].update_potential
+      @@board[spot].occupied_by.update_potential
       if @@board[spot].occupied_by.potential.empty?
         puts "That piece has no available moves, pick another"
         Game.select_piece
@@ -153,6 +153,15 @@ class Game
     Game.update_all_potentials
   end
 
+  def self.in_check(color)
+
+    Game.update_all_potentials
+    Game.pieces.each |piece|
+      piece.potential.each |spot|
+      end
+    end
+
+  end
 end
 
 Game.new
@@ -220,3 +229,4 @@ s8_5 = Board.new([8,5])
 s8_6 = Board.new([8,6])
 s8_7 = Board.new([8,7])
 s8_8 = Board.new([8,8])
+black_king = King.new()

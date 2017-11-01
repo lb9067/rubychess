@@ -527,10 +527,6 @@ class King < Knight
     @team_in_path = team_in_path
   end
 
-  def in_check
-
-  end
-
   def create_icon
     @color == "black" ? @icon = "\u2654" : @icon = "\u265A"
   end

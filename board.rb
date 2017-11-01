@@ -57,6 +57,7 @@ class Game
   #    overlapped and no spot contains it as an occupant anymore
   def self.add_to_taken(piece)
     @@taken << piece
+    Game.pieces.delete(piece)
   end
 
   # => Easy way to call or iterate through all the spots
@@ -80,8 +81,6 @@ class Game
   # => Updates all piece's potential moves in one swift kic....
   #    Will only use when a King is selected to avoid allowing
   #    moves that will put it in check
-  # => Need to test and make sure it wont break for taken pieces, or
-  #    remove taken pieces from being updated at all
   def self.update_all_potentials
     @@pieces.each { |x| x.update_potential }
   end
@@ -153,15 +152,6 @@ class Game
     Game.update_all_potentials
   end
 
-  def self.in_check(color)
-
-    Game.update_all_potentials
-    Game.pieces.each |piece|
-      piece.potential.each |spot|
-      end
-    end
-
-  end
 end
 
 Game.new

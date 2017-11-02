@@ -5,8 +5,7 @@
 # => remove moves that would reveal youself checked
 # => streamline order of operations for updating potential moves and general gameplay
 
-
-class Knight
+class Piece
   attr_accessor :spot, :potential, :team_in_path
   attr_reader :icon, :color, :opposite
   # => Pieces init by spot's object name, not the actual spot (e.g. s1_1)
@@ -25,6 +24,23 @@ class Knight
     Game.add_to_pieces(self)
     create_icon
   end
+
+  # => This is called by the game, it takes an argument of the destination
+  #    and updates the destination spot's object with itself as its occupant,
+  #    as well as updates itself with the object it now occupies
+  # => If the piece is taking an opponent, the oppenent's spot is not refreshed
+  #    and therefore cannot be selected anymore since pieces are selected
+  #    by the spot, and not the piece itself
+  # => The taken piece is added to a @@taken array in the Game class
+  # => Marks the piece as moved to disqualify it from special moves
+  def change_spot(spot)
+    spot.update_occupied_by(self)
+    @spot = spot
+    @moved = true
+  end
+end
+
+class Knight < Piece
 
   def create_icon
     @color == "black" ? @icon = "\u2658" : @icon = "\u265E"
@@ -58,23 +74,9 @@ class Knight
     @potential = potential
     @team_in_path = team_in_path
   end
-
-  # => This is called by the game, it takes an argument of the destination
-  #    and updates the destination spot's object with itself as its occupant,
-  #    as well as updates itself with the object it now occupies
-  # => If the piece is taking an opponent, the oppenent's spot is not refreshed
-  #    and therefore cannot be selected anymore since pieces are selected
-  #    by the spot, and not the piece itself
-  # => The taken piece is added to a @@taken array in the Game class
-  # => Marks the piece as moved to disqualify it from special moves
-  def change_spot(spot)
-    spot.update_occupied_by(self)
-    @spot = spot
-    @moved = true
-  end
 end
 
-class UpPawn < Knight
+class UpPawn < Piece
   # => Adds forward space if its empty
   #    and forward diagonals if occupied by opponent and not out of bounds
   # => Needs to be updated with queen polymorph
@@ -102,7 +104,7 @@ class UpPawn < Knight
   end
 end
 
-class DownPawn < Knight
+class DownPawn < Piece
 
   # => Adds forward space if its empty
   #    and forward diagonals if occupied by opponent and not out of bounds
@@ -131,7 +133,7 @@ class DownPawn < Knight
   end
 end
 
-class Rook < Knight
+class Rook < Piece
 
   # => Checks spots in one direction and adds to potential moves until
   #    it reaches the end, a team member, or an opponent. If it reaches
@@ -219,7 +221,7 @@ class Rook < Knight
   end
 end
 
-class Bishop < Knight
+class Bishop < Piece
 
   # => Checks spots in one direction and adds to potential moves until
   #    it reaches the end, a team member, or an opponent. If it reaches
@@ -316,7 +318,7 @@ class Bishop < Knight
   end
 end
 
-class Queen < Knight
+class Queen < Piece
 
   # => Checks spots in one direction and adds to potential moves until
   #    it reaches the end, a team member, or an opponent. If it reaches
@@ -482,7 +484,7 @@ class Queen < Knight
   end
 end
 
-class King < Knight
+class King < Piece
 
   # => Adds all potential moves to an array,
   #    deletes the ones that are out of bounds,
@@ -531,4 +533,5 @@ class King < Knight
   def create_icon
     @color == "black" ? @icon = "\u2654" : @icon = "\u265A"
   end
+
 end

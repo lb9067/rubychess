@@ -40,7 +40,9 @@ class Game
   def initialize
     @@board = []
     @@pieces = []
+    @@kings = []
     @@taken = []
+    $check = false
   end
 
   # => Called in spot init to add to board spots array
@@ -51,6 +53,7 @@ class Game
   # => Called in piece init to add to pieces array
   def self.add_to_pieces(piece)
     @@pieces << piece
+    @@kings << piece if piece.is_a?(King)
   end
 
   # => Called by the Game when a piece is taken-or basically
@@ -70,6 +73,10 @@ class Game
   #    updating potentials for all pieces
   def self.pieces
     @@pieces
+  end
+
+  def self.kings
+    @@kings
   end
 
   # => Easy access to taken pieces. No use yet but will probably use
@@ -93,6 +100,38 @@ class Game
   def self.whos_here(spot,i_am=nil)
     @@board.each { |x| i_am = x.occupied_by if x.spot == spot }
     i_am == " " ? i_am : i_am.color
+  end
+
+  def self.check_check(color,allow=true)
+    Game.kings.each do |king|
+      if king.color == color
+        Game.pieces.each do |piece|
+          if piece.color != color
+            piece.potential.each do |pot|
+              if pot == king.spot.spot
+                allow = false
+              end
+            end
+          end
+        end
+      end
+    end
+    if allow == true
+      Game.kings.each do |king|
+        if king.color != color
+          Game.pieces.each do |piece|
+            if piece.color == color
+              piece.potential.each do |pot|
+                if pot == king.spot.spot
+                  king.check = true
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+    allow
   end
 
   # => This method has you choose a spot by its axis points in order to
@@ -146,10 +185,16 @@ class Game
     origin = Game.select_piece
     origin_piece = origin.occupied_by
     destination = Game.select_destination(origin_piece)
-    Game.add_to_taken(destination.occupied_by) if destination.occupied_by != " "
-    origin_piece.change_spot(destination)
     origin.update_occupied_by
     Game.update_all_potentials
+    if Game.check_check(origin_piece.color) == false
+      origin.update_occupied_by(origin_piece)
+      puts "That move will put you in check, make another move"
+      Game.make_move
+    else
+      origin_piece.change_spot(destination)
+      Game.add_to_taken(destination.occupied_by) if destination.occupied_by != " "
+    end
   end
 
 end

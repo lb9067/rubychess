@@ -295,6 +295,7 @@ class Bishop < Piece
     y = @spot.spot[1]
     unless y == 1 || x == 1
       y -= 1
+      x -= 1
       until y <= 0 || x <= 0 || done == true
         if Game.whos_here([x,y]) == " "
           potential << [x,y]
@@ -461,6 +462,7 @@ class Queen < Piece
     y = @spot.spot[1]
     unless y == 1 || x == 1
       y -= 1
+      x -= 1
       until y <= 0 || x <= 0 || done == true
         if Game.whos_here([x,y]) == " "
           potential << [x,y]
@@ -485,7 +487,7 @@ class Queen < Piece
 end
 
 class King < Piece
-
+  attr_accessor :check
   # => Adds all potential moves to an array,
   #    deletes the ones that are out of bounds,
   #    then deletes the ones that are occupied by a team member
@@ -532,6 +534,6 @@ class King < Piece
 
   def create_icon
     @color == "black" ? @icon = "\u2654" : @icon = "\u265A"
+    @check = false
   end
-
 end

@@ -1,8 +1,9 @@
 # => create board (use colorize?)
-# => recognize check(mate)
+# => imlement players and to only allow to choose their own pieces
+# => update to know when OUT of check
+# => utilize check to restrict moves
 # => add queen polymorph to pawns
 # => add castle move for rook/king
-# => remove moves that would reveal youself checked
 # => streamline order of operations for updating potential moves and general gameplay
 
 class Piece

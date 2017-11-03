@@ -139,14 +139,14 @@ class Game
   # => It is reliant on the order of spots initialized as mentioned above
   # => It will not let you choose a spot if there is no piece there or
   #    if that piece has no moves.
-  def self.select_piece
+  def self.select_piece(color)
     puts "Choose a piece by spot"
     input = gets.chomp
     select = input.split(",")
     spot = (((select[0].to_i-1)*8)+select[1].to_i)-1
-    if @@board[spot].occupied_by == " "
+    unless @@board[spot].occupied_by.color == color
       puts "There is no piece here, try again!"
-      Game.select_piece
+      Game.select_piece(color)
     else
       if @@board[spot].occupied_by.is_a?(King)
         Game.update_all_potentials
@@ -154,7 +154,7 @@ class Game
       @@board[spot].occupied_by.update_potential
       if @@board[spot].occupied_by.potential.empty?
         puts "That piece has no available moves, pick another"
-        Game.select_piece
+        Game.select_piece(color)
       else
         @@board[spot]
       end
@@ -181,8 +181,8 @@ class Game
   #    updates the pieces spot and the spots occupant and adds pieces
   #    that were taken to the @@taken array
   # => It currently updates all potentials but this will be changed.
-  def self.make_move
-    origin = Game.select_piece
+  def self.make_move(color)
+    origin = Game.select_piece(color)
     origin_piece = origin.occupied_by
     destination = Game.select_destination(origin_piece)
     origin.update_occupied_by
@@ -190,7 +190,7 @@ class Game
     if Game.check_check(origin_piece.color) == false
       origin.update_occupied_by(origin_piece)
       puts "That move will put you in check, make another move"
-      Game.make_move
+      Game.make_move(color)
     else
       origin_piece.change_spot(destination)
       Game.add_to_taken(destination.occupied_by) if destination.occupied_by != " "

@@ -76,6 +76,7 @@ class Game
     $game_over = true if piece.is_a?(King)
     @@taken << piece
     Game.pieces.delete(piece)
+    @@taken.sort_by! { |x| x.color }
   end
 
   # => Easy way to call or iterate through all the spots
@@ -98,6 +99,12 @@ class Game
   #    this to display the taken pieces in the GUI
   def self.taken
     @@taken
+  end
+
+  def self.print_taken
+    print "Taken pieces: "
+    @@taken.each { |x| print x.icon }
+    puts ""
   end
 
   # => Updates all piece's potential moves in one swift kic....
@@ -240,6 +247,7 @@ class Game
     puts "1 |"+"  #{Game.board[0].display}  ".bg_gray+"|"+"  #{Game.board[8].display}  "+"|"+"  #{Game.board[16].display}  ".bg_gray+"|"+"  #{Game.board[24].display}  "+"|"+"  #{Game.board[32].display}  ".bg_gray+"|"+"  #{Game.board[40].display}  "+"|"+"  #{Game.board[48].display}  ".bg_gray+"|"+"  #{Game.board[56].display}  "+"|"
     puts "  |"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"
     puts "     1     2     3     4     5     6     7     8   X"
+    Game.print_taken
   end
 
   def self.b_board
@@ -269,6 +277,7 @@ class Game
     puts "8 |"+"  #{Game.board[63].display}  ".bg_gray+"|"+"  #{Game.board[55].display}  "+"|"+"  #{Game.board[47].display}  ".bg_gray+"|"+"  #{Game.board[39].display}  "+"|"+"  #{Game.board[31].display}  ".bg_gray+"|"+"  #{Game.board[23].display}  "+"|"+"  #{Game.board[15].display}  ".bg_gray+"|"+"  #{Game.board[7].display}  "+"|"
     puts "  |"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"
     puts "     8     7     6     5     4     3     2     1   X"
+    Game.print_taken
   end
 
   def self.play_game

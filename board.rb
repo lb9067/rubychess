@@ -160,7 +160,7 @@ class Game
     input = gets.chomp
     select = input.split(",")
     spot = (((select[0].to_i-1)*8)+select[1].to_i)-1
-    unless @@board[spot].occupied_by.color == color
+    if @@board[spot].occupied_by == " " || @@board[spot].occupied_by.color != color
       puts "You don't have a piece here, try again!"
       Game.select_piece(color)
     else

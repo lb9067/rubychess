@@ -1,5 +1,4 @@
 # => update to show and know when OUT of check
-# => add queen polymorph to pawns
 # => add castle move for rook/king
 # => streamline order of operations for updating potential moves and general gameplay
 
@@ -77,7 +76,6 @@ end
 class UpPawn < Piece
   # => Adds forward space if its empty
   #    and forward diagonals if occupied by opponent and not out of bounds
-  # => Needs to be updated with queen polymorph
   def update_potential
     x = @spot.spot[0]
     y = @spot.spot[1]
@@ -100,13 +98,26 @@ class UpPawn < Piece
   def create_icon
     @color == "black" ? @icon = "\u2659" : @icon = "\u265F"
   end
+
+  def change_spot(spot)
+    spot.update_occupied_by(self)
+    @spot = spot
+    @moved = true
+    if spot.spot[1] == 8
+      polymorph
+    end
+  end
+
+  def polymorph
+    Queen.new(@spot,@color)
+    Game.pieces.delete(self)
+  end
 end
 
 class DownPawn < Piece
 
   # => Adds forward space if its empty
   #    and forward diagonals if occupied by opponent and not out of bounds
-  # => Needs to be updated with queen polymorph
   def update_potential
     x = @spot.spot[0]
     y = @spot.spot[1]
@@ -128,6 +139,20 @@ class DownPawn < Piece
 
   def create_icon
     @color == "black" ? @icon = "\u2659" : @icon = "\u265F"
+  end
+
+  def change_spot(spot)
+    spot.update_occupied_by(self)
+    @spot = spot
+    @moved = true
+    if spot.spot[1] == 1
+      polymorph
+    end
+  end
+
+  def polymorph
+    Queen.new(@spot,@color)
+    Game.pieces.delete(self)
   end
 end
 

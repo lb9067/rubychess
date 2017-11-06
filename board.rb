@@ -213,7 +213,7 @@ class Game
     end
   end
 
-  def self.show_board
+  def self.w_board
     puts "Y  _______________________________________________"
     puts "  |"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"
     puts "8 |"+"  #{Game.board[7].display}  "+"|"+"  #{Game.board[15].display}  ".bg_gray+"|"+"  #{Game.board[23].display}  "+"|"+"  #{Game.board[31].display}  ".bg_gray+"|"+"  #{Game.board[39].display}  "+"|"+"  #{Game.board[47].display}  ".bg_gray+"|"+"  #{Game.board[55].display}  "+"|"+"  #{Game.board[63].display}  ".bg_gray+"|"
@@ -242,13 +242,42 @@ class Game
     puts "     1     2     3     4     5     6     7     8   X"
   end
 
+  def self.b_board
+    puts "Y  _______________________________________________"
+    puts "  |"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"
+    puts "1 |"+"  #{Game.board[56].display}  "+"|"+"  #{Game.board[48].display}  ".bg_gray+"|"+"  #{Game.board[40].display}  "+"|"+"  #{Game.board[32].display}  ".bg_gray+"|"+"  #{Game.board[24].display}  "+"|"+"  #{Game.board[16].display}  ".bg_gray+"|"+"  #{Game.board[8].display}  "+"|"+"  #{Game.board[0].display}  ".bg_gray+"|"
+    puts "  |"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"
+    puts "  |"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"
+    puts "2 |"+"  #{Game.board[57].display}  ".bg_gray+"|"+"  #{Game.board[49].display}  "+"|"+"  #{Game.board[41].display}  ".bg_gray+"|"+"  #{Game.board[33].display}  "+"|"+"  #{Game.board[25].display}  ".bg_gray+"|"+"  #{Game.board[17].display}  "+"|"+"  #{Game.board[9].display}  ".bg_gray+"|"+"  #{Game.board[1].display}  "+"|"
+    puts "  |"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"
+    puts "  |"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"
+    puts "3 |"+"  #{Game.board[58].display}  "+"|"+"  #{Game.board[50].display}  ".bg_gray+"|"+"  #{Game.board[42].display}  "+"|"+"  #{Game.board[34].display}  ".bg_gray+"|"+"  #{Game.board[26].display}  "+"|"+"  #{Game.board[18].display}  ".bg_gray+"|"+"  #{Game.board[10].display}  "+"|"+"  #{Game.board[2].display}  ".bg_gray+"|"
+    puts "  |"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"
+    puts "  |"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"
+    puts "4 |"+"  #{Game.board[59].display}  ".bg_gray+"|"+"  #{Game.board[51].display}  "+"|"+"  #{Game.board[43].display}  ".bg_gray+"|"+"  #{Game.board[35].display}  "+"|"+"  #{Game.board[27].display}  ".bg_gray+"|"+"  #{Game.board[19].display}  "+"|"+"  #{Game.board[11].display}  ".bg_gray+"|"+"  #{Game.board[3].display}  "+"|"
+    puts "  |"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"
+    puts "  |"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"
+    puts "5 |"+"  #{Game.board[60].display}  "+"|"+"  #{Game.board[52].display}  ".bg_gray+"|"+"  #{Game.board[44].display}  "+"|"+"  #{Game.board[36].display}  ".bg_gray+"|"+"  #{Game.board[28].display}  "+"|"+"  #{Game.board[20].display}  ".bg_gray+"|"+"  #{Game.board[12].display}  "+"|"+"  #{Game.board[4].display}  ".bg_gray+"|"
+    puts "  |"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"
+    puts "  |"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"
+    puts "6 |"+"  #{Game.board[61].display}  ".bg_gray+"|"+"  #{Game.board[53].display}  "+"|"+"  #{Game.board[45].display}  ".bg_gray+"|"+"  #{Game.board[37].display}  "+"|"+"  #{Game.board[29].display}  ".bg_gray+"|"+"  #{Game.board[21].display}  "+"|"+"  #{Game.board[13].display}  ".bg_gray+"|"+"  #{Game.board[5].display}  "+"|"
+    puts "  |"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"
+    puts "  |"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"
+    puts "7 |"+"  #{Game.board[62].display}  "+"|"+"  #{Game.board[54].display}  ".bg_gray+"|"+"  #{Game.board[46].display}  "+"|"+"  #{Game.board[38].display}  ".bg_gray+"|"+"  #{Game.board[30].display}  "+"|"+"  #{Game.board[22].display}  ".bg_gray+"|"+"  #{Game.board[14].display}  "+"|"+"  #{Game.board[6].display}  ".bg_gray+"|"
+    puts "  |"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"
+    puts "  |"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"+"     ".bg_gray+"|"+"     "+"|"
+    puts "8 |"+"  #{Game.board[63].display}  ".bg_gray+"|"+"  #{Game.board[55].display}  "+"|"+"  #{Game.board[47].display}  ".bg_gray+"|"+"  #{Game.board[39].display}  "+"|"+"  #{Game.board[31].display}  ".bg_gray+"|"+"  #{Game.board[23].display}  "+"|"+"  #{Game.board[15].display}  ".bg_gray+"|"+"  #{Game.board[7].display}  "+"|"
+    puts "  |"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"
+    puts "     8     7     6     5     4     3     2     1   X"
+  end
+
   def self.play_game
     until $game_over == true
       puts "\e[H\e[2J"
-      Game.show_board
+      Game.w_board
       Game.make_move("white")
       puts "\e[H\e[2J"
-      Game.show_board
+      Game.b_board
       Game.make_move("black")
     end
   end

@@ -1,7 +1,6 @@
 # => create board (use colorize?)
 # => imlement players and to only allow to choose their own pieces
-# => update to know when OUT of check
-# => utilize check to restrict moves
+# => update to show and know when OUT of check
 # => add queen polymorph to pawns
 # => add castle move for rook/king
 # => streamline order of operations for updating potential moves and general gameplay

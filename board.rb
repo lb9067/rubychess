@@ -56,6 +56,7 @@ class Game
     @@kings = []
     @@taken = []
     $check = false
+    $game_over = false
   end
 
   # => Called in spot init to add to board spots array
@@ -72,6 +73,7 @@ class Game
   # => Called by the Game when a piece is taken-or basically
   #    overlapped and no spot contains it as an occupant anymore
   def self.add_to_taken(piece)
+    $game_over = true if piece.is_a?(King)
     @@taken << piece
     Game.pieces.delete(piece)
   end
@@ -153,12 +155,13 @@ class Game
   # => It will not let you choose a spot if there is no piece there or
   #    if that piece has no moves.
   def self.select_piece(color)
+    puts "#{color.capitalize}'s turn!"
     puts "Choose a piece by spot"
     input = gets.chomp
     select = input.split(",")
     spot = (((select[0].to_i-1)*8)+select[1].to_i)-1
     unless @@board[spot].occupied_by.color == color
-      puts "There is no piece here, try again!"
+      puts "You don't have a piece here, try again!"
       Game.select_piece(color)
     else
       if @@board[spot].occupied_by.is_a?(King)
@@ -239,6 +242,17 @@ class Game
     puts "     1     2     3     4     5     6     7     8   X"
   end
 
+  def self.play_game
+    until $game_over == true
+      puts "\e[H\e[2J"
+      Game.show_board
+      Game.make_move("white")
+      puts "\e[H\e[2J"
+      Game.show_board
+      Game.make_move("black")
+    end
+  end
+
 end
 
 Game.new
@@ -306,4 +320,35 @@ s8_5 = Board.new([8,5])
 s8_6 = Board.new([8,6])
 s8_7 = Board.new([8,7])
 s8_8 = Board.new([8,8])
-black_king = King.new()
+b_king = King.new(s5_8,"black")
+b_queen = Queen.new(s4_8,"black")
+b_bishop = Bishop.new(s3_8,"black")
+b_bishop = Bishop.new(s6_8,"black")
+b_knight = Knight.new(s2_8,"black")
+b_knight = Knight.new(s7_8,"black")
+b_rook = Rook.new(s1_8,"black")
+b_rook = Rook.new(s8_8,"black")
+b_pawn = DownPawn.new(s1_7,"black")
+b_pawn = DownPawn.new(s2_7,"black")
+b_pawn = DownPawn.new(s3_7,"black")
+b_pawn = DownPawn.new(s4_7,"black")
+b_pawn = DownPawn.new(s5_7,"black")
+b_pawn = DownPawn.new(s6_7,"black")
+b_pawn = DownPawn.new(s7_7,"black")
+b_pawn = DownPawn.new(s8_7,"black")
+w_king = King.new(s5_1)
+w_queen = Queen.new(s4_1)
+w_bishop = Bishop.new(s3_1)
+w_bishop = Bishop.new(s6_1)
+w_knight = Knight.new(s2_1)
+w_knight = Knight.new(s7_1)
+w_rook = Rook.new(s1_1)
+w_rook = Rook.new(s8_1)
+w_pawn = UpPawn.new(s1_2)
+w_pawn = UpPawn.new(s2_2)
+w_pawn = UpPawn.new(s3_2)
+w_pawn = UpPawn.new(s4_2)
+w_pawn = UpPawn.new(s5_2)
+w_pawn = UpPawn.new(s6_2)
+w_pawn = UpPawn.new(s7_2)
+w_pawn = UpPawn.new(s8_2)

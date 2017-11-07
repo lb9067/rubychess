@@ -1,4 +1,5 @@
 # => update to show and know when OUT of check
+# => update game over to when the king has no moves
 # => add castle move for rook/king
 # => streamline order of operations for updating potential moves and general gameplay
 
@@ -299,7 +300,7 @@ class Bishop < Piece
     unless y == 1 || x == 8
       x += 1
       y -= 1
-      until y >= 0 || x >= 9 || done == true
+      until y <= 0 || x >= 9 || done == true
         if Game.whos_here([x,y]) == " "
           potential << [x,y]
         elsif Game.whos_here([x,y]) == @opposite
@@ -466,7 +467,7 @@ class Queen < Piece
     unless y == 1 || x == 8
       x += 1
       y -= 1
-      until y >= 0 || x >= 9 || done == true
+      until y <= 0 || x >= 9 || done == true
         if Game.whos_here([x,y]) == " "
           potential << [x,y]
         elsif Game.whos_here([x,y]) == @opposite

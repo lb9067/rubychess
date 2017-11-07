@@ -55,7 +55,7 @@ class Game
     @@pieces = []
     @@kings = []
     @@taken = []
-    $check = false
+    $danger_piece = nil
     $game_over = false
   end
 
@@ -95,6 +95,10 @@ class Game
     @@kings
   end
 
+  def self.display_check
+    @@kings.each { |king| puts "#{king.color.capitalize} is in check!" if king.check == true }
+  end
+
   # => Easy access to taken pieces. No use yet but will probably use
   #    this to display the taken pieces in the GUI
   def self.taken
@@ -124,12 +128,12 @@ class Game
     i_am == " " ? i_am : i_am.color
   end
 
-  def self.check_check(color,allow=true)
+  def self.check_self_check(color,allow=true)
     Game.kings.each do |king|
       if king.color == color
-        Game.pieces.each do |piece|
-          if piece.color != color
-            piece.potential.each do |pot|
+        Game.board.each do |board|
+          if Game.whos_here(board.spot) != color && Game.whos_here(board.spot) != " "
+            board.occupied_by.potential.each do |pot|
               if pot == king.spot.spot
                 allow = false
               end
@@ -138,22 +142,47 @@ class Game
         end
       end
     end
-    if allow == true
-      Game.kings.each do |king|
-        if king.color != color
-          Game.pieces.each do |piece|
-            if piece.color == color
-              piece.potential.each do |pot|
-                if pot == king.spot.spot
-                  king.check = true
-                end
-              end
+    allow
+  end
+
+  def self.check_check
+    Game.update_all_potentials
+    Game.kings.each do |king|
+      king.check = false
+      Game.pieces.each do |piece|
+        if piece.color == king.opposite
+          piece.potential.each do |pot|
+            if pot == king.spot.spot
+              $danger_piece = piece
+              king.check = true
+              $game_over true if Game.check_mate(king)
             end
           end
         end
       end
     end
-    allow
+  end
+
+  def self.check_mate(king,mate=true)
+    if king.potential.empty?
+      @@pieces.each do |piece|
+        if piece.color == king.color
+          piece.potential.any? do |spot|
+            $danger_piece.potential.any? do |block|
+              mate = false if spot == block
+            end
+          end
+        end
+        if mate == true
+          piece.potential.any? do |spot|
+            mate = false if spot == $danger_piece.spot.spot
+          end
+        end
+      end
+    else
+      mate = false
+    end
+    mate
   end
 
   # => This method has you choose a spot by its axis points in order to
@@ -171,10 +200,7 @@ class Game
       puts "You don't have a piece here, try again!"
       Game.select_piece(color)
     else
-      if @@board[spot].occupied_by.is_a?(King)
-        Game.update_all_potentials
-      end
-      @@board[spot].occupied_by.update_potential
+      Game.update_all_potentials
       if @@board[spot].occupied_by.potential.empty?
         puts "That piece has no available moves, pick another"
         Game.select_piece(color)
@@ -208,15 +234,19 @@ class Game
     origin = Game.select_piece(color)
     origin_piece = origin.occupied_by
     destination = Game.select_destination(origin_piece)
+    destination_piece = destination.occupied_by unless destination.occupied_by == " "
     origin.update_occupied_by
+    destination.update_occupied_by(origin_piece)
     Game.update_all_potentials
-    if Game.check_check(origin_piece.color) == false
+    if Game.check_self_check(origin_piece.color) == false
       origin.update_occupied_by(origin_piece)
+      destination_piece == nil ? destination.update_occupied_by : destination.update_occupied_by(destination_piece)
       puts "That move leaves your King revealed, make another move"
       Game.make_move(color)
     else
+      Game.add_to_taken(destination_piece) if destination_piece != nil
       origin_piece.change_spot(destination)
-      Game.add_to_taken(destination.occupied_by) if destination.occupied_by != " "
+      Game.check_check
     end
   end
 
@@ -248,6 +278,7 @@ class Game
     puts "  |"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"
     puts "     1     2     3     4     5     6     7     8   X"
     Game.print_taken
+    Game.display_check
   end
 
   def self.b_board
@@ -278,6 +309,7 @@ class Game
     puts "  |"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"+"_____".bg_gray+"|"+"_____"+"|"
     puts "     8     7     6     5     4     3     2     1   X"
     Game.print_taken
+    Game.display_check
   end
 
   def self.play_game
@@ -358,8 +390,8 @@ s8_5 = Board.new([8,5])
 s8_6 = Board.new([8,6])
 s8_7 = Board.new([8,7])
 s8_8 = Board.new([8,8])
-b_king = King.new(s5_8,"black")
-b_queen = Queen.new(s4_8,"black")
+b_king = King.new(s4_8,"black")
+b_queen = Queen.new(s5_8,"black")
 b_bishop = Bishop.new(s3_8,"black")
 b_bishop = Bishop.new(s6_8,"black")
 b_knight = Knight.new(s2_8,"black")
@@ -374,8 +406,8 @@ b_pawn = DownPawn.new(s5_7,"black")
 b_pawn = DownPawn.new(s6_7,"black")
 b_pawn = DownPawn.new(s7_7,"black")
 b_pawn = DownPawn.new(s8_7,"black")
-w_king = King.new(s5_1)
-w_queen = Queen.new(s4_1)
+w_king = King.new(s4_1)
+w_queen = Queen.new(s5_1)
 w_bishop = Bishop.new(s3_1)
 w_bishop = Bishop.new(s6_1)
 w_knight = Knight.new(s2_1)

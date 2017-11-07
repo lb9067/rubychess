@@ -23,6 +23,182 @@ class Piece
     create_icon
   end
 
+  def up_x_moves
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    done = false
+    unless x == 8
+      x += 1
+      until x >= 9 || done == true
+        if Game.whos_here([x,y]) == " "
+          @potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          @potential << [x,y]
+          done = true
+        else
+          @team_in_path << [x,y]
+          done = true
+        end
+        x += 1
+      end
+    end
+  end
+
+  def down_x_moves
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    done = false
+    unless x == 1
+      x -= 1
+      until x <= 0 || done == true
+        if Game.whos_here([x,y]) == " "
+          @potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          @potential << [x,y]
+          done = true
+        else
+          @team_in_path << [x,y]
+          done = true
+        end
+        x -= 1
+      end
+    end
+  end
+
+  def up_y_moves
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    done = false
+    unless y == 8
+      y += 1
+      until y >= 9 || done == true
+        if Game.whos_here([x,y]) == " "
+          @potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          @potential << [x,y]
+          done = true
+        else
+          @team_in_path << [x,y]
+          done = true
+        end
+        y += 1
+      end
+    end
+  end
+
+  def down_y_moves
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    done = false
+    unless y == 1
+      y -= 1
+      until y <= 0 || done == true
+        if Game.whos_here([x,y]) == " "
+          @potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          @potential << [x,y]
+          done = true
+        else
+          @team_in_path << [x,y]
+          done = true
+        end
+        y -= 1
+      end
+    end
+  end
+
+  def up_up_moves
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    done = false
+    unless x == 8 || y == 8
+      x += 1
+      y += 1
+      until x >= 9 || y >= 9 || done == true
+        if Game.whos_here([x,y]) == " "
+          @potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          @potential << [x,y]
+          done = true
+        else
+          @team_in_path << [x,y]
+          done = true
+        end
+        x += 1
+        y += 1
+      end
+    end
+  end
+
+  def down_up_moves
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    done = false
+    unless x == 1 || y == 8
+      x -= 1
+      y += 1
+      until x <= 0 || y >= 9 || done == true
+        if Game.whos_here([x,y]) == " "
+          @potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          @potential << [x,y]
+          done = true
+        else
+          @team_in_path << [x,y]
+          done = true
+        end
+        x -= 1
+        y += 1
+      end
+    end
+  end
+
+  def up_down_moves
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    done = false
+    unless y == 1 || x == 8
+      x += 1
+      y -= 1
+      until y <= 0 || x >= 9 || done == true
+        if Game.whos_here([x,y]) == " "
+          @potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          @potential << [x,y]
+          done = true
+        else
+          @team_in_path << [x,y]
+          done = true
+        end
+        x += 1
+        y -= 1
+      end
+    end
+  end
+
+  def down_down_moves
+    x = @spot.spot[0]
+    y = @spot.spot[1]
+    done = false
+    unless y == 1 || x == 1
+      y -= 1
+      x -= 1
+      until y <= 0 || x <= 0 || done == true
+        if Game.whos_here([x,y]) == " "
+          @potential << [x,y]
+        elsif Game.whos_here([x,y]) == @opposite
+          @potential << [x,y]
+          done = true
+        else
+          @team_in_path << [x,y]
+          done = true
+        end
+        x -= 1
+        y -= 1
+      end
+    end
+  end
+
   # => This is called by the game, it takes an argument of the destination
   #    and updates the destination spot's object with itself as its occupant,
   #    as well as updates itself with the object it now occupies
@@ -165,79 +341,12 @@ class Rook < Piece
   # => Does this 3 more times for the other directions
   # => Needs to be updated to allow castle move
   def update_potential
-    x = @spot.spot[0]
-    y = @spot.spot[1]
-    team_in_path = []
-    potential = []
-    done = false
-    unless x == 8
-      x += 1
-      until x >= 9 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        x += 1
-      end
-    end
-    done = false
-    x = @spot.spot[0]
-    unless x == 1
-      x -= 1
-      until x <= 0 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        x -= 1
-      end
-    end
-    done = false
-    x = @spot.spot[0]
-    unless y == 8
-      y += 1
-      until y >= 9 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        y += 1
-      end
-    end
-    done = false
-    y = @spot.spot[1]
-    unless y == 1
-      y -= 1
-      until y <= 0 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        y -= 1
-      end
-    end
-    @potential = potential
-    @team_in_path = team_in_path
+    @team_in_path = []
+    @potential = []
+    up_x_moves
+    down_x_moves
+    up_y_moves
+    down_y_moves
   end
 
   def create_icon
@@ -252,90 +361,12 @@ class Bishop < Piece
   #    an oppenent it adds its space as the last move in this direction
   # => Does this 3 more times for the other directions
   def update_potential
-    x = @spot.spot[0]
-    y = @spot.spot[1]
-    team_in_path = []
-    potential = []
-    done = false
-    unless x == 8 || y == 8
-      x += 1
-      y += 1
-      until x >= 9 || y >= 9 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        x += 1
-        y += 1
-      end
-    end
-    done = false
-    x = @spot.spot[0]
-    y = @spot.spot[1]
-    unless x == 1 || y == 8
-      x -= 1
-      y += 1
-      until x <= 0 || y >= 9 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        x -= 1
-        y += 1
-      end
-    end
-    done = false
-    x = @spot.spot[0]
-    y = @spot.spot[1]
-    unless y == 1 || x == 8
-      x += 1
-      y -= 1
-      until y <= 0 || x >= 9 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        x += 1
-        y -= 1
-      end
-    end
-    done = false
-    x = @spot.spot[0]
-    y = @spot.spot[1]
-    unless y == 1 || x == 1
-      y -= 1
-      x -= 1
-      until y <= 0 || x <= 0 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        x -= 1
-        y -= 1
-      end
-    end
-    @potential = potential
-    @team_in_path = team_in_path
+    @team_in_path = []
+    @potential = []
+    up_up_moves
+    up_down_moves
+    down_up_moves
+    down_down_moves
   end
 
   def create_icon
@@ -350,159 +381,16 @@ class Queen < Piece
   #    an oppenent it adds its space as the last move in this direction
   # => Does this 7 more times for the other directions
   def update_potential
-    x = @spot.spot[0]
-    y = @spot.spot[1]
-    team_in_path = []
-    potential = []
-    done = false
-    unless x == 8
-      x += 1
-      until x >= 9 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        x += 1
-      end
-    end
-    done = false
-    x = @spot.spot[0]
-    unless x == 1
-      x -= 1
-      until x <= 0 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        x -= 1
-      end
-    end
-    done = false
-    x = @spot.spot[0]
-    unless y == 8
-      y += 1
-      until y >= 9 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        y += 1
-      end
-    end
-    done = false
-    y = @spot.spot[1]
-    unless y == 1
-      y -= 1
-      until y <= 0 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        y -= 1
-      end
-    end
-    done = false
-    x = @spot.spot[0]
-    y = @spot.spot[1]
-    unless x == 8 || y == 8
-      x += 1
-      y += 1
-      until x >= 9 || y >= 9 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        x += 1
-        y += 1
-      end
-    end
-    done = false
-    x = @spot.spot[0]
-    y = @spot.spot[1]
-    unless x == 1 || y == 8
-      x -= 1
-      y += 1
-      until x <= 0 || y >= 9 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        x -= 1
-        y += 1
-      end
-    end
-    done = false
-    x = @spot.spot[0]
-    y = @spot.spot[1]
-    unless y == 1 || x == 8
-      x += 1
-      y -= 1
-      until y <= 0 || x >= 9 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        x += 1
-        y -= 1
-      end
-    end
-    done = false
-    x = @spot.spot[0]
-    y = @spot.spot[1]
-    unless y == 1 || x == 1
-      y -= 1
-      x -= 1
-      until y <= 0 || x <= 0 || done == true
-        if Game.whos_here([x,y]) == " "
-          potential << [x,y]
-        elsif Game.whos_here([x,y]) == @opposite
-          potential << [x,y]
-          done = true
-        else
-          team_in_path << [x,y]
-          done = true
-        end
-        x -= 1
-        y -= 1
-      end
-    end
-    @potential = potential
-    @team_in_path = team_in_path
+    @team_in_path = []
+    @potential = []
+    up_x_moves
+    down_x_moves
+    up_y_moves
+    down_y_moves
+    up_up_moves
+    up_down_moves
+    down_up_moves
+    down_down_moves
   end
 
   def create_icon

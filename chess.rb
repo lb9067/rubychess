@@ -495,6 +495,8 @@ class King < Piece
       end
     end
     potential.delete([])
+    potential.delete([x+2,y]) unless potential.include?([x+1,y])
+    potential.delete([x-2,y]) unless potential.include?([x-1,y])
     @potential = potential
     @team_in_path = team_in_path
     @rooks = rooks

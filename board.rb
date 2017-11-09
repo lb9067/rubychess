@@ -57,7 +57,104 @@ class Game
     @@taken = []
     $danger_piece = nil
     @@danger_path = []
-    $game_over = false
+    @@game_over = false
+    @@winner = nil
+    s1_1 = Board.new([1,1])
+    s1_2 = Board.new([1,2])
+    s1_3 = Board.new([1,3])
+    s1_4 = Board.new([1,4])
+    s1_5 = Board.new([1,5])
+    s1_6 = Board.new([1,6])
+    s1_7 = Board.new([1,7])
+    s1_8 = Board.new([1,8])
+    s2_1 = Board.new([2,1])
+    s2_2 = Board.new([2,2])
+    s2_3 = Board.new([2,3])
+    s2_4 = Board.new([2,4])
+    s2_5 = Board.new([2,5])
+    s2_6 = Board.new([2,6])
+    s2_7 = Board.new([2,7])
+    s2_8 = Board.new([2,8])
+    s3_1 = Board.new([3,1])
+    s3_2 = Board.new([3,2])
+    s3_3 = Board.new([3,3])
+    s3_4 = Board.new([3,4])
+    s3_5 = Board.new([3,5])
+    s3_6 = Board.new([3,6])
+    s3_7 = Board.new([3,7])
+    s3_8 = Board.new([3,8])
+    s4_1 = Board.new([4,1])
+    s4_2 = Board.new([4,2])
+    s4_3 = Board.new([4,3])
+    s4_4 = Board.new([4,4])
+    s4_5 = Board.new([4,5])
+    s4_6 = Board.new([4,6])
+    s4_7 = Board.new([4,7])
+    s4_8 = Board.new([4,8])
+    s5_1 = Board.new([5,1])
+    s5_2 = Board.new([5,2])
+    s5_3 = Board.new([5,3])
+    s5_4 = Board.new([5,4])
+    s5_5 = Board.new([5,5])
+    s5_6 = Board.new([5,6])
+    s5_7 = Board.new([5,7])
+    s5_8 = Board.new([5,8])
+    s6_1 = Board.new([6,1])
+    s6_2 = Board.new([6,2])
+    s6_3 = Board.new([6,3])
+    s6_4 = Board.new([6,4])
+    s6_5 = Board.new([6,5])
+    s6_6 = Board.new([6,6])
+    s6_7 = Board.new([6,7])
+    s6_8 = Board.new([6,8])
+    s7_1 = Board.new([7,1])
+    s7_2 = Board.new([7,2])
+    s7_3 = Board.new([7,3])
+    s7_4 = Board.new([7,4])
+    s7_5 = Board.new([7,5])
+    s7_6 = Board.new([7,6])
+    s7_7 = Board.new([7,7])
+    s7_8 = Board.new([7,8])
+    s8_1 = Board.new([8,1])
+    s8_2 = Board.new([8,2])
+    s8_3 = Board.new([8,3])
+    s8_4 = Board.new([8,4])
+    s8_5 = Board.new([8,5])
+    s8_6 = Board.new([8,6])
+    s8_7 = Board.new([8,7])
+    s8_8 = Board.new([8,8])
+    b_king = King.new(s4_8,"black")
+    b_queen = Queen.new(s5_8,"black")
+    b_bishop = Bishop.new(s3_8,"black")
+    b_bishop = Bishop.new(s6_8,"black")
+    b_knight = Knight.new(s2_8,"black")
+    b_knight = Knight.new(s7_8,"black")
+    b_rook = Rook.new(s1_8,"black")
+    b_rook = Rook.new(s8_8,"black")
+    b_pawn = DownPawn.new(s1_7,"black")
+    b_pawn = DownPawn.new(s2_7,"black")
+    b_pawn = DownPawn.new(s3_7,"black")
+    b_pawn = DownPawn.new(s4_7,"black")
+    b_pawn = DownPawn.new(s5_7,"black")
+    b_pawn = DownPawn.new(s6_7,"black")
+    b_pawn = DownPawn.new(s7_7,"black")
+    b_pawn = DownPawn.new(s8_7,"black")
+    w_king = King.new(s4_1)
+    w_queen = Queen.new(s5_1)
+    w_bishop = Bishop.new(s3_1)
+    w_bishop = Bishop.new(s6_1)
+    w_knight = Knight.new(s2_1)
+    w_knight = Knight.new(s7_1)
+    w_rook = Rook.new(s1_1)
+    w_rook = Rook.new(s8_1)
+    w_pawn = UpPawn.new(s1_2)
+    w_pawn = UpPawn.new(s2_2)
+    w_pawn = UpPawn.new(s3_2)
+    w_pawn = UpPawn.new(s4_2)
+    w_pawn = UpPawn.new(s5_2)
+    w_pawn = UpPawn.new(s6_2)
+    w_pawn = UpPawn.new(s7_2)
+    w_pawn = UpPawn.new(s8_2)
   end
 
   # => Called in spot init to add to board spots array
@@ -74,7 +171,6 @@ class Game
   # => Called by the Game when a piece is taken-or basically
   #    overlapped and no spot contains it as an occupant anymore
   def self.add_to_taken(piece)
-    $game_over = true if piece.is_a?(King)
     @@taken << piece
     Game.pieces.delete(piece)
     @@taken.sort_by! { |x| x.color }
@@ -158,7 +254,10 @@ class Game
               $danger_piece = piece
               king.check = true
               Game.update_danger_path(king.spot.spot)
-              $game_over = true if Game.check_mate(king)
+              if Game.check_mate(king)
+                @@game_over = true
+                @@winner = king.opposite
+              end
             end
           end
         end
@@ -319,113 +418,32 @@ class Game
     Game.display_check
   end
 
-  def self.play_game
-    until $game_over == true
+  def self.white_move
+    unless @@game_over == true
       puts "\e[H\e[2J"
       Game.w_board
       Game.make_move("white")
+    end
+  end
+
+  def self.black_move
+    unless @@game_over == true
       puts "\e[H\e[2J"
       Game.b_board
       Game.make_move("black")
     end
   end
 
+  def self.play_game
+    until @@game_over == true
+      Game.white_move
+      Game.black_move
+    end
+    puts "\e[H\e[2J"
+    @@winner == "white" ? Game.w_board : Game.b_board
+    puts "#{@@winner.capitalize} has won the game!"
+  end
+
 end
 
 Game.new
-s1_1 = Board.new([1,1])
-s1_2 = Board.new([1,2])
-s1_3 = Board.new([1,3])
-s1_4 = Board.new([1,4])
-s1_5 = Board.new([1,5])
-s1_6 = Board.new([1,6])
-s1_7 = Board.new([1,7])
-s1_8 = Board.new([1,8])
-s2_1 = Board.new([2,1])
-s2_2 = Board.new([2,2])
-s2_3 = Board.new([2,3])
-s2_4 = Board.new([2,4])
-s2_5 = Board.new([2,5])
-s2_6 = Board.new([2,6])
-s2_7 = Board.new([2,7])
-s2_8 = Board.new([2,8])
-s3_1 = Board.new([3,1])
-s3_2 = Board.new([3,2])
-s3_3 = Board.new([3,3])
-s3_4 = Board.new([3,4])
-s3_5 = Board.new([3,5])
-s3_6 = Board.new([3,6])
-s3_7 = Board.new([3,7])
-s3_8 = Board.new([3,8])
-s4_1 = Board.new([4,1])
-s4_2 = Board.new([4,2])
-s4_3 = Board.new([4,3])
-s4_4 = Board.new([4,4])
-s4_5 = Board.new([4,5])
-s4_6 = Board.new([4,6])
-s4_7 = Board.new([4,7])
-s4_8 = Board.new([4,8])
-s5_1 = Board.new([5,1])
-s5_2 = Board.new([5,2])
-s5_3 = Board.new([5,3])
-s5_4 = Board.new([5,4])
-s5_5 = Board.new([5,5])
-s5_6 = Board.new([5,6])
-s5_7 = Board.new([5,7])
-s5_8 = Board.new([5,8])
-s6_1 = Board.new([6,1])
-s6_2 = Board.new([6,2])
-s6_3 = Board.new([6,3])
-s6_4 = Board.new([6,4])
-s6_5 = Board.new([6,5])
-s6_6 = Board.new([6,6])
-s6_7 = Board.new([6,7])
-s6_8 = Board.new([6,8])
-s7_1 = Board.new([7,1])
-s7_2 = Board.new([7,2])
-s7_3 = Board.new([7,3])
-s7_4 = Board.new([7,4])
-s7_5 = Board.new([7,5])
-s7_6 = Board.new([7,6])
-s7_7 = Board.new([7,7])
-s7_8 = Board.new([7,8])
-s8_1 = Board.new([8,1])
-s8_2 = Board.new([8,2])
-s8_3 = Board.new([8,3])
-s8_4 = Board.new([8,4])
-s8_5 = Board.new([8,5])
-s8_6 = Board.new([8,6])
-s8_7 = Board.new([8,7])
-s8_8 = Board.new([8,8])
-b_king = King.new(s4_8,"black")
-b_queen = Queen.new(s5_8,"black")
-b_bishop = Bishop.new(s3_8,"black")
-b_bishop = Bishop.new(s6_8,"black")
-b_knight = Knight.new(s2_8,"black")
-b_knight = Knight.new(s7_8,"black")
-b_rook = Rook.new(s1_8,"black")
-b_rook = Rook.new(s8_8,"black")
-b_pawn = DownPawn.new(s1_7,"black")
-b_pawn = DownPawn.new(s2_7,"black")
-b_pawn = DownPawn.new(s3_7,"black")
-b_pawn = DownPawn.new(s4_7,"black")
-b_pawn = DownPawn.new(s5_7,"black")
-b_pawn = DownPawn.new(s6_7,"black")
-b_pawn = DownPawn.new(s7_7,"black")
-b_pawn = DownPawn.new(s8_7,"black")
-w_king = King.new(s4_1)
-w_queen = Queen.new(s5_1)
-w_bishop = Bishop.new(s3_1)
-w_bishop = Bishop.new(s6_1)
-w_knight = Knight.new(s2_1)
-w_knight = Knight.new(s7_1)
-w_rook = Rook.new(s1_1)
-w_rook = Rook.new(s8_1)
-w_pawn = UpPawn.new(s1_2)
-w_pawn = UpPawn.new(s2_2)
-w_pawn = UpPawn.new(s3_2)
-w_pawn = UpPawn.new(s4_2)
-w_pawn = UpPawn.new(s5_2)
-w_pawn = UpPawn.new(s6_2)
-w_pawn = UpPawn.new(s7_2)
-w_pawn = UpPawn.new(s8_2)

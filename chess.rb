@@ -1,6 +1,8 @@
-# => update to end the game upon checkmate
-# => add castle move for rook/king
+# => aupdate castle move to not allow king to pass through check
 # => streamline order of operations for updating potential moves and general gameplay
+# => update to not accept invalid input for selecting spots
+# => add options to cancel a move and maybe display available moves of selected piece
+# => add save/load
 
 class Piece
   attr_accessor :spot, :potential, :team_in_path
@@ -448,6 +450,7 @@ class King < Piece
     x = @spot.spot[0]
     y = @spot.spot[1]
     team_in_path = []
+    rooks = []
     potential = [
                  [x+1,y+1],
                  [x+1,y-1],
@@ -466,6 +469,19 @@ class King < Piece
       x.reject! { Game.whos_here(x) == self.color }
     end
     potential.delete([])
+    # => below is castle move
+    if @moved == false
+      Game.pieces.each do |rook|
+        if rook.is_a?(Rook) && rook.color == @color
+          rooks << rook
+          if rook.moved == false && rook.team_in_path.include?(self.spot.spot)
+            potential << [x-2,y] if rook.spot.spot[0] < x
+            potential << [x+2,y] if rook.spot.spot[0] > x
+          end
+        end
+      end
+    end
+    # => above is castle move
     potential.each do |king|
       Game.pieces.each do |piece|
         if piece.color == @opposite
@@ -481,10 +497,35 @@ class King < Piece
     potential.delete([])
     @potential = potential
     @team_in_path = team_in_path
+    @rooks = rooks
   end
 
   def create_icon
     @color == "black" ? @icon = "\u2654" : @icon = "\u265A"
     @check = false
+    @rooks = []
+  end
+
+  def change_spot(spot)
+    x = spot.spot[0]
+    y = spot.spot[1]
+    if @spot.spot[0] - x == 2
+      @rooks.each do |rook|
+        if rook.spot.spot[0] < @spot.spot[0]
+          rook.spot.update_occupied_by
+          rook.change_spot(Game.board[(x*8)+y-1])
+        end
+      end
+    elsif @spot.spot[0] - x == (-2)
+      @rooks.each do |rook|
+        if rook.spot.spot[0] > @spot.spot[0]
+          rook.spot.update_occupied_by
+          rook.change_spot(Game.board[((x-2)*8)+y-1])
+        end
+      end
+    end
+    spot.update_occupied_by(self)
+    @spot = spot
+    @moved = true
   end
 end

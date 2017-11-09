@@ -1,5 +1,4 @@
-# => update to show and know when OUT of check
-# => update game over to when the king has no moves
+# => update to end the game upon checkmate
 # => add castle move for rook/king
 # => streamline order of operations for updating potential moves and general gameplay
 
@@ -23,15 +22,20 @@ class Piece
     create_icon
   end
 
-  def up_x_moves
+  def up_x_moves(king)
     x = @spot.spot[0]
     y = @spot.spot[1]
     done = false
+    danger_path = false
+    unless king == nil
+      danger_path = true if king[1] == y && king[0] > x
+    end
     unless x == 8
       x += 1
       until x >= 9 || done == true
         if Game.whos_here([x,y]) == " "
           @potential << [x,y]
+          Game.danger_path << [x,y] if danger_path == true
         elsif Game.whos_here([x,y]) == @opposite
           @potential << [x,y]
           done = true
@@ -44,15 +48,20 @@ class Piece
     end
   end
 
-  def down_x_moves
+  def down_x_moves(king)
     x = @spot.spot[0]
     y = @spot.spot[1]
     done = false
+    danger_path = false
+    unless king == nil
+      danger_path = true if king[1] == y && king[0] < x
+    end
     unless x == 1
       x -= 1
       until x <= 0 || done == true
         if Game.whos_here([x,y]) == " "
           @potential << [x,y]
+          Game.danger_path << [x,y] if danger_path == true
         elsif Game.whos_here([x,y]) == @opposite
           @potential << [x,y]
           done = true
@@ -65,15 +74,20 @@ class Piece
     end
   end
 
-  def up_y_moves
+  def up_y_moves(king)
     x = @spot.spot[0]
     y = @spot.spot[1]
     done = false
+    danger_path = false
+    unless king == nil
+      danger_path = true if king[0] == x && king[1] > y
+    end
     unless y == 8
       y += 1
       until y >= 9 || done == true
         if Game.whos_here([x,y]) == " "
           @potential << [x,y]
+          Game.danger_path << [x,y] if danger_path == true
         elsif Game.whos_here([x,y]) == @opposite
           @potential << [x,y]
           done = true
@@ -86,15 +100,20 @@ class Piece
     end
   end
 
-  def down_y_moves
+  def down_y_moves(king)
     x = @spot.spot[0]
     y = @spot.spot[1]
     done = false
+    danger_path = false
+    unless king == nil
+      danger_path = true if king[0] == x && king[1] < y
+    end
     unless y == 1
       y -= 1
       until y <= 0 || done == true
         if Game.whos_here([x,y]) == " "
           @potential << [x,y]
+          Game.danger_path << [x,y] if danger_path == true
         elsif Game.whos_here([x,y]) == @opposite
           @potential << [x,y]
           done = true
@@ -107,16 +126,21 @@ class Piece
     end
   end
 
-  def up_up_moves
+  def up_up_moves(king)
     x = @spot.spot[0]
     y = @spot.spot[1]
     done = false
+    danger_path = false
+    unless king == nil
+      danger_path = true if king[0] > x && king[1] > y
+    end
     unless x == 8 || y == 8
       x += 1
       y += 1
       until x >= 9 || y >= 9 || done == true
         if Game.whos_here([x,y]) == " "
           @potential << [x,y]
+          Game.danger_path << [x,y] if danger_path == true
         elsif Game.whos_here([x,y]) == @opposite
           @potential << [x,y]
           done = true
@@ -130,16 +154,21 @@ class Piece
     end
   end
 
-  def down_up_moves
+  def down_up_moves(king)
     x = @spot.spot[0]
     y = @spot.spot[1]
     done = false
+    danger_path = false
+    unless king == nil
+      danger_path = true if king[0] < x && king[1] > y
+    end
     unless x == 1 || y == 8
       x -= 1
       y += 1
       until x <= 0 || y >= 9 || done == true
         if Game.whos_here([x,y]) == " "
           @potential << [x,y]
+          Game.danger_path << [x,y] if danger_path == true
         elsif Game.whos_here([x,y]) == @opposite
           @potential << [x,y]
           done = true
@@ -153,16 +182,21 @@ class Piece
     end
   end
 
-  def up_down_moves
+  def up_down_moves(king)
     x = @spot.spot[0]
     y = @spot.spot[1]
     done = false
+    danger_path = false
+    unless king == nil
+      danger_path = true if king[0] > x && king[1] < y
+    end
     unless y == 1 || x == 8
       x += 1
       y -= 1
       until y <= 0 || x >= 9 || done == true
         if Game.whos_here([x,y]) == " "
           @potential << [x,y]
+          Game.danger_path << [x,y] if danger_path == true
         elsif Game.whos_here([x,y]) == @opposite
           @potential << [x,y]
           done = true
@@ -176,16 +210,21 @@ class Piece
     end
   end
 
-  def down_down_moves
+  def down_down_moves(king)
     x = @spot.spot[0]
     y = @spot.spot[1]
     done = false
+    danger_path = false
+    unless king == nil
+      danger_path = true if king[0] < x && king[1] < y
+    end
     unless y == 1 || x == 1
       y -= 1
       x -= 1
       until y <= 0 || x <= 0 || done == true
         if Game.whos_here([x,y]) == " "
           @potential << [x,y]
+          Game.danger_path << [x,y] if danger_path == true
         elsif Game.whos_here([x,y]) == @opposite
           @potential << [x,y]
           done = true
@@ -223,7 +262,7 @@ class Knight < Piece
   # => Adds all potential moves to an array,
   #    deletes the ones that are out of bounds,
   #    then deletes the ones that are occupied by a team member
-  def update_potential
+  def update_potential(king=nil)
     x = @spot.spot[0]
     y = @spot.spot[1]
     team_in_path = []
@@ -253,7 +292,7 @@ end
 class UpPawn < Piece
   # => Adds forward space if its empty
   #    and forward diagonals if occupied by opponent and not out of bounds
-  def update_potential
+  def update_potential(king=nil)
     x = @spot.spot[0]
     y = @spot.spot[1]
     team_in_path = []
@@ -295,7 +334,7 @@ class DownPawn < Piece
 
   # => Adds forward space if its empty
   #    and forward diagonals if occupied by opponent and not out of bounds
-  def update_potential
+  def update_potential(king=nil)
     x = @spot.spot[0]
     y = @spot.spot[1]
     team_in_path = []
@@ -340,13 +379,13 @@ class Rook < Piece
   #    an oppenent it adds its space as the last move in this direction
   # => Does this 3 more times for the other directions
   # => Needs to be updated to allow castle move
-  def update_potential
+  def update_potential(king=nil)
     @team_in_path = []
     @potential = []
-    up_x_moves
-    down_x_moves
-    up_y_moves
-    down_y_moves
+    up_x_moves(king)
+    down_x_moves(king)
+    up_y_moves(king)
+    down_y_moves(king)
   end
 
   def create_icon
@@ -360,13 +399,13 @@ class Bishop < Piece
   #    it reaches the end, a team member, or an opponent. If it reaches
   #    an oppenent it adds its space as the last move in this direction
   # => Does this 3 more times for the other directions
-  def update_potential
+  def update_potential(king=nil)
     @team_in_path = []
     @potential = []
-    up_up_moves
-    up_down_moves
-    down_up_moves
-    down_down_moves
+    up_up_moves(king)
+    up_down_moves(king)
+    down_up_moves(king)
+    down_down_moves(king)
   end
 
   def create_icon
@@ -380,17 +419,17 @@ class Queen < Piece
   #    it reaches the end, a team member, or an opponent. If it reaches
   #    an oppenent it adds its space as the last move in this direction
   # => Does this 7 more times for the other directions
-  def update_potential
+  def update_potential(king=nil)
     @team_in_path = []
     @potential = []
-    up_x_moves
-    down_x_moves
-    up_y_moves
-    down_y_moves
-    up_up_moves
-    up_down_moves
-    down_up_moves
-    down_down_moves
+    up_x_moves(king)
+    down_x_moves(king)
+    up_y_moves(king)
+    down_y_moves(king)
+    up_up_moves(king)
+    up_down_moves(king)
+    down_up_moves(king)
+    down_down_moves(king)
   end
 
   def create_icon
@@ -405,7 +444,7 @@ class King < Piece
   #    then deletes the ones that are occupied by a team member
   #    Now deletes moves that would put it in check even by taking a piece
   # => Needs to be updated to allow castle move
-  def update_potential
+  def update_potential(spot=nil)
     x = @spot.spot[0]
     y = @spot.spot[1]
     team_in_path = []

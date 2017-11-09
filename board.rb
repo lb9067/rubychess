@@ -56,6 +56,7 @@ class Game
     @@kings = []
     @@taken = []
     $danger_piece = nil
+    @@danger_path = []
     $game_over = false
   end
 
@@ -116,6 +117,7 @@ class Game
   #    moves that will put it in check
   def self.update_all_potentials
     @@pieces.each { |x| x.update_potential }
+    @@kings.each { |x| x.update_potential }
   end
 
   # => This method is used to see who occupies a spot. It is called
@@ -155,7 +157,8 @@ class Game
             if pot == king.spot.spot
               $danger_piece = piece
               king.check = true
-              $game_over true if Game.check_mate(king)
+              Game.update_danger_path(king.spot.spot)
+              $game_over = true if Game.check_mate(king)
             end
           end
         end
@@ -168,14 +171,10 @@ class Game
       @@pieces.each do |piece|
         if piece.color == king.color
           piece.potential.any? do |spot|
-            $danger_piece.potential.any? do |block|
+            mate = false if spot == $danger_piece.spot.spot
+            @@danger_path.any? do |block|
               mate = false if spot == block
             end
-          end
-        end
-        if mate == true
-          piece.potential.any? do |spot|
-            mate = false if spot == $danger_piece.spot.spot
           end
         end
       end
@@ -185,6 +184,14 @@ class Game
     mate
   end
 
+  def self.danger_path
+    @@danger_path
+  end
+
+  def self.update_danger_path(spot)
+    @@danger_path = []
+    $danger_piece.update_potential(spot)
+  end
   # => This method has you choose a spot by its axis points in order to
   #    select the piece you want to move- it is called by make_move
   # => It is reliant on the order of spots initialized as mentioned above

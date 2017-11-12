@@ -298,8 +298,12 @@ class Game
   #    if that piece has no moves.
   def self.select_piece(color)
     puts "#{color.capitalize}'s turn!"
-    puts "Choose a piece by spot"
-    input = gets.chomp
+    puts "Choose a piece by axis: 'x,y'"
+    input = get_input
+    until /[1-8]\,[1-8]/.match(input)
+      puts "That was an invalid entry, try again e.g. '2,3'"
+      input = get_input
+    end
     select = input.split(",")
     spot = (((select[0].to_i-1)*8)+select[1].to_i)-1
     if @@board[spot].occupied_by == " " || @@board[spot].occupied_by.color != color
@@ -320,26 +324,45 @@ class Game
   #    piece.  It checks the potential moves of that piece first and
   #    will not allow you to make an invalid move. -Called by make_move
   def self.select_destination(piece)
-    puts "Choose a destination spot"
-    input = gets.chomp
-    select = input.split(",")
-    spot = (((select[0].to_i-1)*8)+select[1].to_i)-1
-    if piece.potential.include?(@@board[spot].spot)
-      @@board[spot]
-    else
-      puts "You can't go there, try again"
-      select_destination(piece)
+      puts "You can type 'available' to see moves, or 'cancel' to choose another piece"
+      puts "Choose a destination spot"
+      input = get_input
+      until /[1-8]\,[1-8]/.match(input)
+        if input == "cancel"
+          return
+        elsif input == "available"
+          print piece.potential
+          puts ""
+          input = get_input
+        else
+          puts "That was an invalid entry, try again e.g. '2,3'"
+          input = get_input
+        end
+      end
+      select = input.split(",")
+      spot = (((select[0].to_i-1)*8)+select[1].to_i)-1
+      if piece.potential.include?(@@board[spot].spot)
+        @@board[spot]
+      else
+        puts "You can't go there, try again"
+        select_destination(piece)
+      end
     end
+
+  def self.get_input
+    gets.chomp.downcase
   end
 
   # => This method calls select_piece and select_destination. It also
   #    updates the pieces spot and the spots occupant and adds pieces
   #    that were taken to the @@taken array
   # => It currently updates all potentials but this will be changed.
-  def self.make_move(color)
-    origin = Game.select_piece(color)
-    origin_piece = origin.occupied_by
-    destination = Game.select_destination(origin_piece)
+  def self.make_move(color,destination=nil)
+    until destination.is_a?(Board)
+      origin = Game.select_piece(color)
+      origin_piece = origin.occupied_by
+      destination = Game.select_destination(origin_piece)
+    end
     destination_piece = destination.occupied_by unless destination.occupied_by == " "
     origin.update_occupied_by
     destination.update_occupied_by(origin_piece)

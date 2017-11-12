@@ -1,7 +1,4 @@
-# => aupdate castle move to not allow king to pass through check
 # => streamline order of operations for updating potential moves and general gameplay
-# => update to not accept invalid input for selecting spots
-# => add options to cancel a move and maybe display available moves of selected piece
 # => add save/load
 
 class Piece

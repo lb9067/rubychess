@@ -1,4 +1,7 @@
 require 'colorize'
+require 'yaml'
+require_relative 'chess'
+
 class String
   def bg_gray
     "\e[47m#{self}\e[0m"
@@ -51,6 +54,30 @@ class Game
   #    class methods, this may change when I implement save/load games
   # => Init starts fresh arrays of board spots, pieces, and taken pieces
   def initialize
+    puts "Welcome to Chess!"
+    puts "Is this going to be a 'NEW' game or would you like to 'LOAD' the last one?"
+    input_accepted = false
+    input = Game.get_input
+    until input_accepted == true
+      if input.downcase == "load"
+        Game.load_game
+        input_accepted = true
+      elsif input.downcase == "new"
+        Game.new_game
+        input_accepted = true
+      else
+        puts "Type 'NEW' or 'LOAD'"
+        input = Game.get_input
+      end
+    end
+  end
+
+  def self.get_input
+    input = gets.chomp.downcase
+    input == "save" ? Game.save_game : input
+  end
+
+  def self.new_game
     @@board = []
     @@pieces = []
     @@kings = []
@@ -59,6 +86,7 @@ class Game
     @@danger_path = []
     @@game_over = false
     @@winner = nil
+    @@whos_turn = "white"
     s1_1 = Board.new([1,1])
     s1_2 = Board.new([1,2])
     s1_3 = Board.new([1,3])
@@ -155,6 +183,49 @@ class Game
     w_pawn = UpPawn.new(s6_2)
     w_pawn = UpPawn.new(s7_2)
     w_pawn = UpPawn.new(s8_2)
+    puts "The rules are simple, play and beat your opponent!"
+    puts "You may type 'SAVE' at any point to save the game"
+    puts "Press enter to begin!"
+    gets.chomp
+    Game.play_game
+  end
+
+  def self.save_game
+    save_data = { :board => @@board,
+                  :pieces => @@pieces,
+                  :kings => @@kings,
+                  :taken => @@taken,
+                  :danger_piece => $danger_piece,
+                  :danger_path => @@danger_path,
+                  :game_over => @@game_over,
+                  :winner => @@winner,
+                  :whos_turn => @@whos_turn }
+    saved_game = YAML.dump(save_data)
+    File.open("chess_save_file.yml", "w") do |f|
+      f.write(saved_game)
+    end
+    puts "Your game has been saved!"
+    puts "Press enter to exit"
+    gets.chomp
+    exit
+  end
+
+  def self.load_game
+    loaded_game = YAML.load(File.open("chess_save_file.yml", "r"))
+    @@board = loaded_game[:board]
+    @@pieces = loaded_game[:pieces]
+    @@kings = loaded_game[:kings]
+    @@taken = loaded_game[:taken]
+    $danger_piece = loaded_game[:danger_piece]
+    @@danger_path = loaded_game[:danger_path]
+    @@game_over = loaded_game[:game_over]
+    @@winner = loaded_game[:winner]
+    @@whos_turn = loaded_game[:whos_turn]
+    puts "Welcome back! Your game has been loaded!"
+    puts "You may type 'SAVE' at any point to save the game"
+    puts "Press enter to begin where you left off"
+    gets.chomp
+    Game.play_game(@@whos_turn)
   end
 
   # => Called in spot init to add to board spots array
@@ -299,10 +370,10 @@ class Game
   def self.select_piece(color)
     puts "#{color.capitalize}'s turn!"
     puts "Choose a piece by axis: 'x,y'"
-    input = get_input
+    input = Game.get_input
     until /[1-8]\,[1-8]/.match(input)
       puts "That was an invalid entry, try again e.g. '2,3'"
-      input = get_input
+      input = Game.get_input
     end
     select = input.split(",")
     spot = (((select[0].to_i-1)*8)+select[1].to_i)-1
@@ -326,17 +397,17 @@ class Game
   def self.select_destination(piece)
       puts "You can type 'available' to see moves, or 'cancel' to choose another piece"
       puts "Choose a destination spot"
-      input = get_input
+      input = Game.get_input
       until /[1-8]\,[1-8]/.match(input)
         if input == "cancel"
           return
         elsif input == "available"
           print piece.potential
           puts ""
-          input = get_input
+          input = Game.get_input
         else
           puts "That was an invalid entry, try again e.g. '2,3'"
-          input = get_input
+          input = Game.get_input
         end
       end
       select = input.split(",")
@@ -348,10 +419,6 @@ class Game
         select_destination(piece)
       end
     end
-
-  def self.get_input
-    gets.chomp.downcase
-  end
 
   # => This method calls select_piece and select_destination. It also
   #    updates the pieces spot and the spots occupant and adds pieces
@@ -442,6 +509,7 @@ class Game
   end
 
   def self.white_move
+    @@whos_turn = "white"
     unless @@game_over == true
       puts "\e[H\e[2J"
       Game.w_board
@@ -450,6 +518,7 @@ class Game
   end
 
   def self.black_move
+    @@whos_turn = "black"
     unless @@game_over == true
       puts "\e[H\e[2J"
       Game.b_board
@@ -457,7 +526,8 @@ class Game
     end
   end
 
-  def self.play_game
+  def self.play_game(color=nil)
+    Game.black_move if color == "black"
     until @@game_over == true
       Game.white_move
       Game.black_move
